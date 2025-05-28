@@ -16,7 +16,7 @@ function main() {
 
   const fsSource = `
     void main() {
-      gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);
+      gl_FragColor = vec4(0.5, 0.2, 0.8, 1.0);
     }
   `;
 
@@ -32,8 +32,7 @@ function main() {
     return;
   }
 
-  gl.viewport(0, 0, canvas.width, canvas.height);
-  gl.clearColor(0.23, 0.7, 0.3, 1.0);
+  gl.clearColor(0.6, 0.4, 0.3, 1.0);
   gl.clearDepth(1.0);
   gl.enable(gl.DEPTH_TEST);
   gl.depthFunc(gl.LEQUAL)
