@@ -22,20 +22,6 @@ export default class GLShader {
       console.log(`Shader: Failed to compile program [${gl.getProgramInfoLog(this.program)}]`);
       return;
     }
-
-    // ?
-    if (!this.program) return;
-
-    const programInfo = {
-      program: this.program,
-      attribLocations: {
-        vertexPosition: gl.getAttribLocation(this.program, "aVertexPosition"),
-      },
-      uniformLocations: {
-        projectionMatrix: gl.getUniformLocation(this.program, "uProjectionMatrix"),
-        modelViewMatrix: gl.getUniformLocation(this.program, "uModelViewMatrix"),
-      },
-    };
   }
 
   public use() {
@@ -48,6 +34,14 @@ export default class GLShader {
 
   public getUniformLocation(uniform: string) {
     return this.gl.getUniformLocation(this.program, uniform);
+  }
+
+  public uniformMatrix4fv(location: string, value: Float32List) {
+    this.gl.uniformMatrix4fv(
+      this.getUniformLocation(location),
+      false,
+      value,
+    );
   }
 
   private loadShader(gl: WebGLRenderingContext, type: GLenum, source: string) {

@@ -17,19 +17,6 @@ export default class GLShader {
             console.log(`Shader: Failed to compile program [${gl.getProgramInfoLog(this.program)}]`);
             return;
         }
-        // ?
-        if (!this.program)
-            return;
-        const programInfo = {
-            program: this.program,
-            attribLocations: {
-                vertexPosition: gl.getAttribLocation(this.program, "aVertexPosition"),
-            },
-            uniformLocations: {
-                projectionMatrix: gl.getUniformLocation(this.program, "uProjectionMatrix"),
-                modelViewMatrix: gl.getUniformLocation(this.program, "uModelViewMatrix"),
-            },
-        };
     }
     use() {
         this.gl.useProgram(this.program);
@@ -39,6 +26,9 @@ export default class GLShader {
     }
     getUniformLocation(uniform) {
         return this.gl.getUniformLocation(this.program, uniform);
+    }
+    uniformMatrix4fv(location, value) {
+        this.gl.uniformMatrix4fv(this.getUniformLocation(location), false, value);
     }
     loadShader(gl, type, source) {
         const shader = gl.createShader(type);
