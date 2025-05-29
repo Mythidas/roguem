@@ -1,9 +1,12 @@
+import type GLObject from "./globject";
+import type Texture from "./texture";
+
 type Parameter = {
   name: GLenum;
   value: GLint;
 }
 
-export default class GLTextureArray {
+export default class GLTextureArray implements GLObject {
   private gl: WebGL2RenderingContext;
   private texture: WebGLTexture;
   private width: number;
@@ -24,8 +27,16 @@ export default class GLTextureArray {
     }
   }
 
+  public destroy(): void {
+    this.gl.deleteTexture(this.texture);
+  }
+
   public bind() {
     this.gl.bindTexture(this.gl.TEXTURE_2D_ARRAY, this.texture);
+  }
+
+  public subImageLoad(layer: number, texture: Texture) {
+    texture.load().then(data => this.subImage(data.width, data.height, layer, data));
   }
 
   public subImage(width: number, height: number, layer: number, data: TexImageSource | ArrayBufferView | null) {

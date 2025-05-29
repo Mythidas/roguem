@@ -1,4 +1,5 @@
 import GLRenderer from "../renderer/renderer.js";
+import Texture from "../renderer/texture.js";
 export default class Engine {
     static singleton;
     state = {
@@ -6,6 +7,7 @@ export default class Engine {
     };
     renderer;
     lastFrameTime = 0;
+    texture;
     constructor() {
         if (!Engine.singleton) {
             Engine.singleton = this;
@@ -21,6 +23,7 @@ export default class Engine {
             return;
         }
         this.renderer = new GLRenderer(gl2, canvas);
+        this.texture = new Texture("assets/test.png");
     }
     start() {
         if (this.state.running === true)
@@ -31,13 +34,14 @@ export default class Engine {
     }
     stop() {
         this.state.running = false;
+        this.renderer?.destroy();
     }
     update(dt) {
     }
     render(dt) {
         this.renderer?.begin();
-        this.renderer?.drawQuad([-3, 0, 0], [1, 1], [1, 1, 1, 1]);
-        this.renderer?.drawQuad([0, 0, 0], [1, 1], [0, 0, 0, 0]);
+        this.renderer?.drawQuad([-3, 0, 0], [1, 1], [1, 1, 1, 1], undefined, undefined, this.texture);
+        this.renderer?.drawQuad([0, 0, 0], [1, 1], [1, 1, 1, 1]);
         this.renderer?.end();
     }
     tick = (timestamp) => {

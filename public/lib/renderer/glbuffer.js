@@ -9,6 +9,9 @@ export default class GLBuffer {
         this.drawMode = drawMode;
         this.buffer = gl.createBuffer();
     }
+    destroy() {
+        this.gl.deleteBuffer(this.buffer);
+    }
     bind() {
         this.gl.bindBuffer(this.type, this.buffer);
     }

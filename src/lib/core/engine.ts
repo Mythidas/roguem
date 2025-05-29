@@ -1,4 +1,5 @@
 import GLRenderer from "../renderer/renderer.js";
+import Texture from "../renderer/texture.js";
 
 type EngineState = {
   running: boolean;
@@ -12,6 +13,7 @@ export default class Engine {
   };
   private renderer: GLRenderer | undefined;
   private lastFrameTime: number = 0;
+  private texture: Texture | undefined;
 
   constructor() {
     if (!Engine.singleton) {
@@ -29,6 +31,7 @@ export default class Engine {
     }
 
     this.renderer = new GLRenderer(gl2, canvas);
+    this.texture = new Texture("assets/test.png");
   }
 
   public start() {
@@ -41,6 +44,7 @@ export default class Engine {
 
   public stop() {
     this.state.running = false;
+    this.renderer?.destroy();
   }
 
   public update(dt: number) {
@@ -48,8 +52,8 @@ export default class Engine {
 
   public render(dt: number) {
     this.renderer?.begin();
-    this.renderer?.drawQuad([-3, 0, 0], [1, 1], [1, 1, 1, 1]);
-    this.renderer?.drawQuad([0, 0, 0], [1, 1], [0, 0, 0, 0]);
+    this.renderer?.drawQuad([-3, 0, 0], [1, 1], [1, 1, 1, 1], undefined, undefined, this.texture);
+    this.renderer?.drawQuad([0, 0, 0], [1, 1], [1, 1, 1, 1]);
     this.renderer?.end();
   }
 

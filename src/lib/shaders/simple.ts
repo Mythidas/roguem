@@ -1,8 +1,8 @@
 export const vsSource = `#version 300 es
 precision mediump float;
 
-in vec4 aVertexPosition;
-in vec4 aColorPosition;
+in vec4 aPosition;
+in vec4 aColor;
 in vec2 aTexCoord;
 in float aTexIndex;
 
@@ -14,8 +14,8 @@ out vec2 vTexCoord;
 out float vTexIndex;
 
 void main() {
-  gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
-  vColor = aColorPosition;
+  gl_Position = uProjectionMatrix * uModelViewMatrix * aPosition;
+  vColor = aColor;
   vTexCoord = aTexCoord;
   vTexIndex = aTexIndex;
 }

@@ -1,4 +1,6 @@
-export default class GLShader {
+import type GLObject from "./globject";
+
+export default class GLShader implements GLObject {
   private gl: WebGLRenderingContext;
   private program: WebGLProgram;
 
@@ -23,7 +25,14 @@ export default class GLShader {
       return;
     }
 
+    this.gl.deleteShader(vertShader);
+    this.gl.deleteShader(fragShader);
+
     this.use();
+  }
+
+  public destroy(): void {
+    this.gl.deleteProgram(this.program);
   }
 
   public use() {

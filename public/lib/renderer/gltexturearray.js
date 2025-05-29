@@ -16,8 +16,14 @@ export default class GLTextureArray {
             this.gl.texParameteri(this.gl.TEXTURE_2D_ARRAY, param.name, param.value);
         }
     }
+    destroy() {
+        this.gl.deleteTexture(this.texture);
+    }
     bind() {
         this.gl.bindTexture(this.gl.TEXTURE_2D_ARRAY, this.texture);
+    }
+    subImageLoad(layer, texture) {
+        texture.load().then(data => this.subImage(data.width, data.height, layer, data));
     }
     subImage(width, height, layer, data) {
         if (layer > this.layers)

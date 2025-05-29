@@ -17,7 +17,12 @@ export default class GLShader {
             console.log(`Shader: Failed to compile program [${gl.getProgramInfoLog(this.program)}]`);
             return;
         }
+        this.gl.deleteShader(vertShader);
+        this.gl.deleteShader(fragShader);
         this.use();
+    }
+    destroy() {
+        this.gl.deleteProgram(this.program);
     }
     use() {
         this.gl.useProgram(this.program);

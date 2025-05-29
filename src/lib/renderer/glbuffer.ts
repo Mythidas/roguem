@@ -1,4 +1,6 @@
-export default class GLBuffer {
+import type GLObject from "./globject";
+
+export default class GLBuffer implements GLObject {
   buffer: WebGLBuffer;
   type: GLenum;
   drawMode: GLenum;
@@ -10,6 +12,10 @@ export default class GLBuffer {
     this.drawMode = drawMode;
 
     this.buffer = gl.createBuffer();
+  }
+
+  public destroy(): void {
+    this.gl.deleteBuffer(this.buffer);
   }
 
   public bind() {
