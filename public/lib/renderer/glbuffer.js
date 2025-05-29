@@ -12,7 +12,15 @@ export default class GLBuffer {
     bind() {
         this.gl.bindBuffer(this.type, this.buffer);
     }
-    data(data) {
-        this.gl.bufferData(this.type, data, this.drawMode);
+    data(dataOrSize) {
+        if (typeof dataOrSize === 'number') {
+            this.gl.bufferData(this.type, dataOrSize, this.drawMode);
+        }
+        else {
+            this.gl.bufferData(this.type, dataOrSize, this.drawMode);
+        }
+    }
+    subData(offset, data) {
+        this.gl.bufferSubData(this.type, offset, data);
     }
 }

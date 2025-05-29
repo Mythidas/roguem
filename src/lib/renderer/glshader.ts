@@ -22,6 +22,8 @@ export default class GLShader {
       console.log(`Shader: Failed to compile program [${gl.getProgramInfoLog(this.program)}]`);
       return;
     }
+
+    this.use();
   }
 
   public use() {

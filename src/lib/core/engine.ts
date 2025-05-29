@@ -22,11 +22,13 @@ export default class Engine {
     }
 
     const canvas = document.querySelector("#gl-canvas") as HTMLCanvasElement;
-    this.renderer = new GLRenderer(canvas);
-    if (!this.renderer.initialized()) {
-      console.log("Unable to initialize WebGL. Your browser or machine may not support it.");
+    const gl2 = canvas.getContext("webgl2");
+    if (!gl2) {
+      console.log("Unable to initialize WebGL2. Your browser or machine may not support it.");
       return;
     }
+
+    this.renderer = new GLRenderer(gl2, canvas);
   }
 
   public start() {
@@ -45,10 +47,10 @@ export default class Engine {
   }
 
   public render(dt: number) {
-    this.renderer?.beginScene();
-    this.renderer?.drawQuad([-3, 0, 0], [1, 1]);
-    this.renderer?.drawQuad([0, 0, 0], [1, 1]);
-    this.renderer?.endScene();
+    this.renderer?.begin();
+    this.renderer?.drawQuad([-3, 0, 0], [1, 1], [1, 1, 1, 1]);
+    this.renderer?.drawQuad([0, 0, 0], [1, 1], [0, 0, 0, 0]);
+    this.renderer?.end();
   }
 
   public tick = (timestamp: number) => {

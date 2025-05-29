@@ -1,4 +1,5 @@
 import GLBuffer from "./glbuffer.js";
+const VERTEX_SIZE = 10;
 function getAttribTypeSize(type) {
     switch (type) {
         case WebGLRenderingContext.FLOAT:
@@ -17,33 +18,33 @@ function getAttribTypeSize(type) {
             return 0;
     }
 }
-export default class GLVertexBuffer {
-    gl;
-    buffer;
-    vertices = [];
-    constructor(gl, attribs) {
-        this.gl = gl;
-        this.buffer = new GLBuffer(this.gl, this.gl.ARRAY_BUFFER, this.gl.DYNAMIC_DRAW);
+export default class GLVertexBuffer extends GLBuffer {
+    vertices;
+    index = 0;
+    constructor(gl, size, attribs) {
+        super(gl, gl.ARRAY_BUFFER, gl.DYNAMIC_DRAW);
+        this.vertices = new Array(size * VERTEX_SIZE).fill(0);
         this.setAttribs(attribs);
     }
-    add(position, scale, color) {
-        this.vertices.push([position[0] + scale[0], position[1] + scale[1], position[2], color[0], color[1], color[2], color[3]]);
-        this.vertices.push([position[0] - scale[0], position[1] + scale[1], position[2], color[0], color[1], color[2], color[3]]);
-        this.vertices.push([position[0] + scale[0], position[1] - scale[1], position[2], color[0], color[1], color[2], color[3]]);
-        this.vertices.push([position[0] - scale[0], position[1] - scale[1], position[2], color[0], color[1], color[2], color[3]]);
+    push(vertex) {
+        for (let i = 0; i < vertex.length; i++) {
+            this.vertices[this.index + i] = vertex[i];
+        }
+        this.index += VERTEX_SIZE;
     }
     use() {
-        this.buffer.bind();
-        this.buffer.data(new Float32Array(this.vertices.flat()));
+        this.bind();
+        this.data(new Float32Array(this.vertices));
     }
-    clear() {
-        this.vertices = [];
+    flush() {
+        this.vertices.fill(0);
+        this.index = 0;
     }
-    bind() {
-        this.buffer.bind();
+    length() {
+        return this.index;
     }
     setAttribs(attribs) {
-        this.buffer.bind();
+        this.bind();
         const stride = attribs.reduce((sum, attrib) => sum + attrib.size * getAttribTypeSize(attrib.type), 0);
         let offset = 0;
         for (const attrib of attribs) {

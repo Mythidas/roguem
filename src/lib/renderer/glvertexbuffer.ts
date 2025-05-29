@@ -1,10 +1,12 @@
-import type { Vector2, Vector3, Vector4 } from "../math/vector.js";
 import GLBuffer from "./glbuffer.js";
 
-export type Vertex = [
+type Vertex = [
   number, number, number, // XYZ
   number, number, number, number, // RGBA
+  number, number, // XZ TexCoord
+  number, // TexIndex
 ];
+const VERTEX_SIZE = 10;
 
 type VertexAttrib = {
   position: GLuint;
@@ -31,40 +33,39 @@ function getAttribTypeSize(type: GLenum): number {
   }
 }
 
-export default class GLVertexBuffer {
-  private gl: WebGLRenderingContext;
-  private buffer: GLBuffer;
-  private vertices: Vertex[] = [];
+export default class GLVertexBuffer extends GLBuffer {
+  private vertices: number[];
+  private index: number = 0;
 
-  constructor(gl: WebGLRenderingContext, attribs: VertexAttrib[]) {
-    this.gl = gl;
-    this.buffer = new GLBuffer(this.gl, this.gl.ARRAY_BUFFER, this.gl.DYNAMIC_DRAW);
-
+  constructor(gl: WebGLRenderingContext, size: number, attribs: VertexAttrib[]) {
+    super(gl, gl.ARRAY_BUFFER, gl.DYNAMIC_DRAW);
+    this.vertices = new Array<number>(size * VERTEX_SIZE).fill(0);
     this.setAttribs(attribs);
   }
 
-  public add(position: Vector3, scale: Vector2, color: Vector4) {
-    this.vertices.push([position[0] + scale[0], position[1] + scale[1], position[2], color[0], color[1], color[2], color[3]]);
-    this.vertices.push([position[0] - scale[0], position[1] + scale[1], position[2], color[0], color[1], color[2], color[3]]);
-    this.vertices.push([position[0] + scale[0], position[1] - scale[1], position[2], color[0], color[1], color[2], color[3]]);
-    this.vertices.push([position[0] - scale[0], position[1] - scale[1], position[2], color[0], color[1], color[2], color[3]]);
+  public push(vertex: Vertex) {
+    for (let i = 0; i < vertex.length; i++) {
+      this.vertices[this.index + i] = vertex[i]!;
+    }
+    this.index += VERTEX_SIZE;
   }
 
   public use() {
-    this.buffer.bind();
-    this.buffer.data(new Float32Array(this.vertices.flat()));
+    this.bind();
+    this.data(new Float32Array(this.vertices));
   }
 
-  public clear() {
-    this.vertices = [];
+  public flush() {
+    this.vertices.fill(0);
+    this.index = 0;
   }
 
-  public bind() {
-    this.buffer.bind();
+  public length() {
+    return this.index;
   }
 
   setAttribs(attribs: VertexAttrib[]) {
-    this.buffer.bind();
+    this.bind();
 
     const stride = attribs.reduce(
       (sum, attrib) => sum + attrib.size * getAttribTypeSize(attrib.type),
