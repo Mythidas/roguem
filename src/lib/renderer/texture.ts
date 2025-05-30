@@ -5,6 +5,9 @@ export default class Texture {
     this.load();
   }
 
+  getSize = () => [this.data?.width || -1, this.data?.height || -1];
+  isLoaded = () => !!this.data;
+
   public async load(): Promise<ImageBitmap> {
     try {
       if (this.data) {

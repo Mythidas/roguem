@@ -5,6 +5,8 @@ export default class Texture {
         this.path = path;
         this.load();
     }
+    getSize = () => [this.data?.width || -1, this.data?.height || -1];
+    isLoaded = () => !!this.data;
     async load() {
         try {
             if (this.data) {
