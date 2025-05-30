@@ -1,4 +1,4 @@
-import type GLObject from "./globject";
+import type GLObject from "./globject.js";
 
 export default class GLShader implements GLObject {
   private gl: WebGLRenderingContext;

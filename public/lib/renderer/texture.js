@@ -3,6 +3,7 @@ export default class Texture {
     data;
     constructor(path) {
         this.path = path;
+        this.load();
     }
     async load() {
         try {

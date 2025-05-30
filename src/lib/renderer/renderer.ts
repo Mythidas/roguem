@@ -105,7 +105,6 @@ export default class GLRenderer implements GLObject {
     this.renderData?.defaultShader.uniformMatrix4fv("uModelViewMatrix", modelViewMatrix);
   }
 
-
   public drawQuad(position: Vector3, scale: Vector2, color: Vector4,
     texCoords?: [Vector2, Vector2, Vector2, Vector2], texIndex?: number, texture?: Texture
   ) {

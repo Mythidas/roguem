@@ -1,4 +1,4 @@
-import type GLObject from "./globject";
+import type GLObject from "./globject.js";
 
 export default class GLBuffer implements GLObject {
   buffer: WebGLBuffer;

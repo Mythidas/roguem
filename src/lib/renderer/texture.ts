@@ -1,7 +1,9 @@
 export default class Texture {
   private data!: ImageBitmap | undefined;
 
-  constructor(private path: string) { }
+  constructor(private path: string) {
+    this.load();
+  }
 
   public async load(): Promise<ImageBitmap> {
     try {

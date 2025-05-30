@@ -1,13 +1,11 @@
 import GLRenderer from "../renderer/renderer.js";
-import Texture from "../renderer/texture.js";
+import Scene from "../scene/scene.js";
 export default class Engine {
     static singleton;
-    state = {
-        running: false
-    };
+    running = false;
     renderer;
+    scene = new Scene("default");
     lastFrameTime = 0;
-    texture;
     constructor() {
         if (!Engine.singleton) {
             Engine.singleton = this;
@@ -23,29 +21,32 @@ export default class Engine {
             return;
         }
         this.renderer = new GLRenderer(gl2, canvas);
-        this.texture = new Texture("assets/test.png");
     }
+    static get = () => Engine.singleton;
+    isRunning = () => this.running;
+    getScene = () => this.scene;
+    getRenderer = () => this.renderer;
     start() {
-        if (this.state.running === true)
+        if (this.running === true)
             return;
-        this.state.running = true;
+        this.running = true;
         this.lastFrameTime = performance.now();
         requestAnimationFrame(this.tick);
     }
     stop() {
-        this.state.running = false;
+        this.running = false;
         this.renderer?.destroy();
     }
     update(dt) {
+        this.scene.onUpdate(dt);
     }
     render(dt) {
         this.renderer?.begin();
-        this.renderer?.drawQuad([-3, 0, 0], [1, 1], [1, 1, 1, 1], undefined, undefined, this.texture);
-        this.renderer?.drawQuad([0, 0, 0], [1, 1], [1, 1, 1, 1]);
+        this.scene.onRender(dt);
         this.renderer?.end();
     }
     tick = (timestamp) => {
-        if (!this.state.running)
+        if (!this.running)
             return;
         const deltaTime = (timestamp - this.lastFrameTime) / 1000; // in seconds
         this.lastFrameTime = timestamp;
@@ -53,10 +54,4 @@ export default class Engine {
         this.render(deltaTime);
         requestAnimationFrame(this.tick);
     };
-    get() {
-        return Engine.singleton;
-    }
-    getState() {
-        return this.state;
-    }
 }

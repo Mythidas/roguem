@@ -1,5 +1,5 @@
-import type GLObject from "./globject";
-import type Texture from "./texture";
+import type GLObject from "./globject.js";
+import type Texture from "./texture.js";
 
 type Parameter = {
   name: GLenum;
