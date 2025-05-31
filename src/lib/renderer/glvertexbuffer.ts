@@ -35,6 +35,7 @@ function getAttribTypeSize(type: GLenum): number {
 
 export default class GLVertexBuffer extends GLBuffer {
   private vertices: number[];
+  private queue: { vertices: [Vertex, Vertex, Vertex, Vertex], zIndex: number }[] = [];
   private index: number = 0;
 
   constructor(gl: WebGLRenderingContext, size: number, attribs: VertexAttrib[]) {
@@ -43,20 +44,30 @@ export default class GLVertexBuffer extends GLBuffer {
     this.setAttribs(attribs);
   }
 
-  public push(vertex: Vertex) {
-    for (let i = 0; i < vertex.length; i++) {
-      this.vertices[this.index + i] = vertex[i]!;
-    }
-    this.index += VERTEX_SIZE;
+  public push(vertices: [Vertex, Vertex, Vertex, Vertex], zIndex: number) {
+    this.queue.push({ vertices, zIndex });
+    this.index += VERTEX_SIZE * 10;
   }
 
   public use() {
+    this.queue.sort((a, b) => b.zIndex - a.zIndex);
+    let count = 0;
+    for (const item of this.queue) {
+      for (const vertex of item.vertices) {
+        for (let i = 0; i < vertex.length; i++) {
+          this.vertices[count] = vertex[i]!;
+          count++;
+        }
+      }
+    }
+
     this.bind();
-    this.data(new Float32Array(this.vertices));
+    this.data(new Float32Array([...this.vertices]));
   }
 
   public flush() {
     this.vertices.fill(0);
+    this.queue = [];
     this.index = 0;
   }
 

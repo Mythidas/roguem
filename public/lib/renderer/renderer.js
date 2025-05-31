@@ -73,7 +73,7 @@ export default class GLRenderer {
         this.renderData?.defaultShader.uniformMatrix4fv("uProjectionMatrix", projectionMatrix);
         this.renderData?.defaultShader.uniformMatrix4fv("uModelViewMatrix", modelViewMatrix);
     }
-    drawQuad(position, scale, color, texCoords, texIndex, texture) {
+    drawQuad(position, scale, color, zIndex, texCoords, texIndex, texture) {
         this.check();
         if (texture) {
             const index = this.renderData.textures.findIndex((tex) => tex === texture);
@@ -86,22 +86,19 @@ export default class GLRenderer {
         }
         const mTexCoords = texCoords || [[1, 1], [0, 1], [1, 0], [0, 0]];
         const mTexIndex = texIndex || 0;
-        this.renderData?.vbo.push([
-            position[0] + scale[0], position[1] + scale[1], position[2],
-            color[0], color[1], color[2], color[3], ...mTexCoords[0], mTexIndex
-        ]);
-        this.renderData?.vbo.push([
-            position[0] - scale[0], position[1] + scale[1], position[2],
-            color[0], color[1], color[2], color[3], ...mTexCoords[1], mTexIndex
-        ]);
-        this.renderData?.vbo.push([
-            position[0] + scale[0], position[1] - scale[1], position[2],
-            color[0], color[1], color[2], color[3], ...mTexCoords[2], mTexIndex
-        ]);
-        this.renderData?.vbo.push([
-            position[0] - scale[0], position[1] - scale[1], position[2],
-            color[0], color[1], color[2], color[3], ...mTexCoords[3], mTexIndex
-        ]);
+        this.renderData?.vbo.push([[
+                position[0] + scale[0], position[1] + scale[1], position[2],
+                color[0], color[1], color[2], color[3], ...mTexCoords[0], mTexIndex
+            ], [
+                position[0] - scale[0], position[1] + scale[1], position[2],
+                color[0], color[1], color[2], color[3], ...mTexCoords[1], mTexIndex
+            ], [
+                position[0] + scale[0], position[1] - scale[1], position[2],
+                color[0], color[1], color[2], color[3], ...mTexCoords[2], mTexIndex
+            ], [
+                position[0] - scale[0], position[1] - scale[1], position[2],
+                color[0], color[1], color[2], color[3], ...mTexCoords[3], mTexIndex
+            ]], zIndex);
         this.renderData.indexCount += 6;
     }
     end() {

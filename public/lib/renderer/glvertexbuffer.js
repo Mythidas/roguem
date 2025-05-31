@@ -20,24 +20,34 @@ function getAttribTypeSize(type) {
 }
 export default class GLVertexBuffer extends GLBuffer {
     vertices;
+    queue = [];
     index = 0;
     constructor(gl, size, attribs) {
         super(gl, gl.ARRAY_BUFFER, gl.DYNAMIC_DRAW);
         this.vertices = new Array(size * VERTEX_SIZE).fill(0);
         this.setAttribs(attribs);
     }
-    push(vertex) {
-        for (let i = 0; i < vertex.length; i++) {
-            this.vertices[this.index + i] = vertex[i];
-        }
-        this.index += VERTEX_SIZE;
+    push(vertices, zIndex) {
+        this.queue.push({ vertices, zIndex });
+        this.index += VERTEX_SIZE * 10;
     }
     use() {
+        this.queue.sort((a, b) => b.zIndex - a.zIndex);
+        let count = 0;
+        for (const item of this.queue) {
+            for (const vertex of item.vertices) {
+                for (let i = 0; i < vertex.length; i++) {
+                    this.vertices[count] = vertex[i];
+                    count++;
+                }
+            }
+        }
         this.bind();
-        this.data(new Float32Array(this.vertices));
+        this.data(new Float32Array([...this.vertices]));
     }
     flush() {
         this.vertices.fill(0);
+        this.queue = [];
         this.index = 0;
     }
     length() {

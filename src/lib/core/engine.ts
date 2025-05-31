@@ -52,7 +52,7 @@ export default class Engine {
 
   render(dt: number) {
     this.renderer?.begin();
-    this.scene.onRender(dt);
+    this.scene.onRender();
     this.renderer?.end();
   }
 

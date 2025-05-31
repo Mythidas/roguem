@@ -42,7 +42,7 @@ export default class Engine {
     }
     render(dt) {
         this.renderer?.begin();
-        this.scene.onRender(dt);
+        this.scene.onRender();
         this.renderer?.end();
     }
     tick = (timestamp) => {

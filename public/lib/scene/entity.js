@@ -13,8 +13,11 @@ export default class Entity {
     getComponent(name) {
         return this.components[name];
     }
-    addComponent(component) {
+    addComponent(componentClass, ...args) {
+        const component = new componentClass(...args);
+        component.entityId = this.id;
         this.components[component.name] = component;
+        return component;
     }
     removeComponent(name) {
         if (this.components[name]) {

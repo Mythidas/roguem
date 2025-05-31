@@ -1,14 +1,14 @@
 import Engine from "../core/engine.js";
-class SpriteRenderer {
+export default class SpriteRenderer {
     name = "SpriteRenderer";
+    entityId = "";
     sprite;
     color = [1, 1, 1, 1];
-    constructor() {
-    }
-    onRender(dt, entId) {
-        const ent = Engine.get()?.getScene().getEntity(entId);
+    zIndex = 0;
+    onRender() {
+        const ent = Engine.get()?.getScene().getEntity(this.entityId);
         if (ent) {
-            Engine.get()?.getRenderer()?.drawQuad(ent.position, ent.scale, [1, 1, 1, 1], undefined, undefined, this.sprite?.texture);
+            Engine.get()?.getRenderer()?.drawQuad(ent.position, ent.scale, [1, 1, 1, 1], this.zIndex, this.sprite?.coordinates, undefined, this.sprite?.texture);
         }
     }
 }

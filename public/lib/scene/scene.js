@@ -21,15 +21,15 @@ export default class Scene {
         for (const ent of this.entities) {
             for (const [key, component] of Object.entries(ent.getComponents())) {
                 if (component.onUpdate)
-                    component.onUpdate(dt, ent.id);
+                    component.onUpdate(dt);
             }
         }
     }
-    onRender(dt) {
+    onRender() {
         for (const ent of this.entities) {
             for (const [key, component] of Object.entries(ent.getComponents())) {
                 if (component.onRender)
-                    component.onRender(dt, ent.id);
+                    component.onRender();
             }
         }
     }

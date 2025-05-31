@@ -21,10 +21,12 @@ export default class Entity {
     return this.components[name] as T | undefined;
   }
 
-  public addComponent(component: Component) {
+  public addComponent<T extends Component>(componentClass: new (...args: any[]) => T, ...args: any[]): T {
+    const component = new componentClass(...args);
+    component.entityId = this.id;
     this.components[component.name] = component;
+    return component;
   }
-
   public removeComponent(name: string) {
     if (this.components[name]) {
       delete this.components[name];

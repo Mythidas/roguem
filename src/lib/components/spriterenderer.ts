@@ -3,18 +3,18 @@ import type { Vector4 } from "../math/vector.js";
 import type Sprite from "../renderer/sprite.js";
 import type Component from "../scene/component.js";
 
-class SpriteRenderer implements Component {
+export default class SpriteRenderer implements Component {
   readonly name: string = "SpriteRenderer";
+
+  entityId: string = "";
   sprite: Sprite | undefined;
   color: Vector4 = [1, 1, 1, 1];
+  zIndex: number = 0;
 
-  constructor() {
-  }
-
-  onRender(dt: number, entId: string): void {
-    const ent = Engine.get()?.getScene().getEntity(entId);
+  onRender(): void {
+    const ent = Engine.get()?.getScene().getEntity(this.entityId);
     if (ent) {
-      Engine.get()?.getRenderer()?.drawQuad(ent.position, ent.scale, [1, 1, 1, 1], undefined, undefined, this.sprite?.texture);
+      Engine.get()?.getRenderer()?.drawQuad(ent.position, ent.scale, [1, 1, 1, 1], this.zIndex, this.sprite?.coordinates, undefined, this.sprite?.texture);
     }
   }
 }
