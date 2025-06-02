@@ -1,4 +1,8 @@
+import type { Vector2 } from "../math/vector.js";
+
 export default class Texture {
+  pixelsPerUnit = 100;
+
   private data!: ImageBitmap | undefined;
 
   constructor(private path: string) {
@@ -19,11 +23,20 @@ export default class Texture {
         imageOrientation: "flipY",
       });
 
-      return Promise.resolve(this.data);
+      return this.data;
     } catch (err) {
       console.log(err);
-      return Promise.reject();
+      return Promise.reject(err);
     }
+  }
+
+  public scaleCoords(size: number, coords: [Vector2, Vector2, Vector2, Vector2]) {
+    if (!this.data) return coords;
+    const ratio = [this.data?.width / size, this.data?.height / size];
+    coords[0] = [coords[0][0] * ratio[0]!, coords[0][1] * ratio[1]!];
+    coords[1] = [coords[1][0] * ratio[0]!, coords[1][1] * ratio[1]!];
+    coords[2] = [coords[2][0] * ratio[0]!, coords[2][1] * ratio[1]!];
+    coords[3] = [coords[3][0] * ratio[0]!, coords[3][1] * ratio[1]!];
   }
 
   private loadImage(path: string): Promise<HTMLImageElement> {

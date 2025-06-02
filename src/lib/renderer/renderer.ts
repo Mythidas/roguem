@@ -25,10 +25,13 @@ const QUAD_COUNT = 1000;
 const INDICE_COUNT = QUAD_COUNT * 4;
 
 export default class GLRenderer implements GLObject {
+  readonly TEXTURE_SIZE = 2048;
+  readonly TEXTURE_LIMIT: number;
+
   private gl: WebGL2RenderingContext;
   private canvas: HTMLCanvasElement;
   private renderData: Data;
-  readonly TEXTURE_LIMIT: number;
+
   private stats: Stats = {
     drawCalls: 0
   };
@@ -36,7 +39,7 @@ export default class GLRenderer implements GLObject {
   constructor(gl: WebGL2RenderingContext, canvas: HTMLCanvasElement) {
     this.gl = gl;
     this.canvas = canvas;
-    this.TEXTURE_LIMIT = gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS);
+    this.TEXTURE_LIMIT = Math.min(32, gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS));
 
     const shader = new GLShader(this.gl, SimpleShader.vsSource, SimpleShader.fsSource);
     const vertexPosition = shader.getAttribLocation("aPosition");
@@ -52,15 +55,15 @@ export default class GLRenderer implements GLObject {
     ]);
     const indexBuffer = new GLIndexBuffer(this.gl, INDICE_COUNT);
 
-    const textures = new GLTextureArray(this.gl, 64, 64, this.TEXTURE_LIMIT, [
+    const textures = new GLTextureArray(this.gl, this.TEXTURE_SIZE, this.TEXTURE_SIZE, this.TEXTURE_LIMIT, [
       { name: gl.TEXTURE_MIN_FILTER, value: gl.NEAREST },
       { name: gl.TEXTURE_MAG_FILTER, value: gl.NEAREST },
       { name: gl.TEXTURE_WRAP_S, value: gl.CLAMP_TO_EDGE },
       { name: gl.TEXTURE_WRAP_T, value: gl.CLAMP_TO_EDGE },
     ]);
 
-    const whiteTexture = new Array<number>(64 * 64 * 4).fill(255);
-    textures.subImage(64, 64, 0, new Uint8Array(whiteTexture));
+    const whiteTexture = new Array<number>(this.TEXTURE_SIZE * this.TEXTURE_SIZE * 4).fill(255);
+    textures.subImage(this.TEXTURE_SIZE, this.TEXTURE_SIZE, 0, new Uint8Array(whiteTexture));
 
     this.renderData = {
       vbo: vertexBuffer,
@@ -110,6 +113,11 @@ export default class GLRenderer implements GLObject {
   ) {
     this.check();
 
+    const mTexCoords: [Vector2, Vector2, Vector2, Vector2] = texCoords
+      ? texCoords.map(([x, y]) => [x, y]) as [Vector2, Vector2, Vector2, Vector2]
+      : [[1, 1], [0, 1], [1, 0], [0, 0]];
+
+
     if (texture) {
       const index = this.renderData.textures.findIndex((tex) => tex === texture);
       if (index !== -1) {
@@ -117,22 +125,24 @@ export default class GLRenderer implements GLObject {
       } else {
         this.renderData.textures.push(texture);
       }
+
+      texture.scaleCoords(this.TEXTURE_SIZE, mTexCoords);
     }
 
-    const mTexCoords = texCoords || [[1, 1], [0, 1], [1, 0], [0, 0]];
     const mTexIndex = texIndex || 0;
+    const mScale = texture ? [(scale[0] * 0.5) * (100 / texture.pixelsPerUnit), (scale[1] * 0.5) * (100 / texture.pixelsPerUnit)] : [scale[0] * 0.5, scale[1] * 0.5];
 
     this.renderData?.vbo.push([[
-      position[0] + scale[0], position[1] + scale[1], position[2],
+      position[0] + mScale[0]!, position[1] + mScale[1]!, position[2],
       color[0], color[1], color[2], color[3], ...mTexCoords[0], mTexIndex
     ], [
-      position[0] - scale[0], position[1] + scale[1], position[2],
+      position[0] - mScale[0]!, position[1] + mScale[1]!, position[2],
       color[0], color[1], color[2], color[3], ...mTexCoords[1], mTexIndex
     ], [
-      position[0] + scale[0], position[1] - scale[1], position[2],
+      position[0] + mScale[0]!, position[1] - mScale[1]!, position[2],
       color[0], color[1], color[2], color[3], ...mTexCoords[2], mTexIndex
     ], [
-      position[0] - scale[0], position[1] - scale[1], position[2],
+      position[0] - mScale[0]!, position[1] - mScale[1]!, position[2],
       color[0], color[1], color[2], color[3], ...mTexCoords[3], mTexIndex
     ]], zIndex);
 

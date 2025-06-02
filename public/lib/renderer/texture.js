@@ -1,5 +1,6 @@
 export default class Texture {
     path;
+    pixelsPerUnit = 100;
     data;
     constructor(path) {
         this.path = path;
@@ -16,12 +17,21 @@ export default class Texture {
             this.data = await createImageBitmap(img, {
                 imageOrientation: "flipY",
             });
-            return Promise.resolve(this.data);
+            return this.data;
         }
         catch (err) {
             console.log(err);
-            return Promise.reject();
+            return Promise.reject(err);
         }
+    }
+    scaleCoords(size, coords) {
+        if (!this.data)
+            return coords;
+        const ratio = [this.data?.width / size, this.data?.height / size];
+        coords[0] = [coords[0][0] * ratio[0], coords[0][1] * ratio[1]];
+        coords[1] = [coords[1][0] * ratio[0], coords[1][1] * ratio[1]];
+        coords[2] = [coords[2][0] * ratio[0], coords[2][1] * ratio[1]];
+        coords[3] = [coords[3][0] * ratio[0], coords[3][1] * ratio[1]];
     }
     loadImage(path) {
         return new Promise((resolve, reject) => {

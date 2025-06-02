@@ -50,7 +50,7 @@ export default class GLVertexBuffer extends GLBuffer {
   }
 
   public use() {
-    this.queue.sort((a, b) => b.zIndex - a.zIndex);
+    this.queue.sort((a, b) => a.zIndex - b.zIndex);
     let count = 0;
     for (const item of this.queue) {
       for (const vertex of item.vertices) {
