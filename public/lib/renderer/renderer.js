@@ -55,24 +55,25 @@ export default class GLRenderer {
         this.renderData.ibo.destroy();
         this.renderData.vbo.destroy();
     }
-    begin() {
-        this.gl.clearColor(0.6, 0.4, 0.3, 1.0);
+    begin(camera) {
+        if (camera) {
+            this.gl.clearColor(camera.clearColor[0], camera.clearColor[1], camera.clearColor[2], camera.clearColor[3]);
+        }
+        else {
+            this.gl.clearColor(1, 1, 1, 1);
+        }
         this.gl.clearDepth(1.0);
         this.gl.enable(this.gl.DEPTH_TEST);
         this.gl.depthFunc(this.gl.LEQUAL);
         this.gl.enable(this.gl.BLEND);
         this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-        const aspect = this.canvas.clientWidth / this.canvas.clientHeight;
-        const zNear = 0.1;
-        const zFar = 100.0;
-        const projectionMatrix = mat4.create();
-        const modelViewMatrix = mat4.create();
-        mat4.orthographic(projectionMatrix, 5, aspect, zNear, zFar);
-        mat4.translate(modelViewMatrix, [0.0, 0.0, -5.0]);
-        this.renderData?.defaultShader.use();
-        this.renderData?.defaultShader.uniformMatrix4fv("uProjectionMatrix", projectionMatrix);
-        this.renderData?.defaultShader.uniformMatrix4fv("uModelViewMatrix", modelViewMatrix);
+        if (camera) {
+            camera.resize(this.canvas.clientWidth, this.canvas.clientHeight);
+            this.renderData?.defaultShader.use();
+            this.renderData?.defaultShader.uniformMatrix4fv("uProjectionMatrix", camera.getProjection());
+            this.renderData?.defaultShader.uniformMatrix4fv("uModelViewMatrix", camera.getModelView());
+        }
     }
     drawQuad(position, scale, color, zIndex, texCoords, texIndex, texture) {
         this.check();

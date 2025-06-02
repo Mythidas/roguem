@@ -12,6 +12,7 @@ export default class Scene {
     getEntity(id) {
         return this.entities.find((e) => e.id === id);
     }
+    getEntities = () => this.entities;
     destroyEntity(id) {
         this.entities.filter((e) => e.id !== id);
     }

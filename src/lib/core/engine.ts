@@ -1,3 +1,4 @@
+import type Camera from "../components/camera.js";
 import GLRenderer from "../renderer/renderer.js";
 import Scene from "../scene/scene.js";
 
@@ -50,8 +51,17 @@ export default class Engine {
     this.scene.onUpdate(dt);
   }
 
-  render(dt: number) {
-    this.renderer?.begin();
+  render() {
+    let camera = undefined;
+    for (const ent of this.scene.getEntities()) {
+      const cameraComponent = ent.getComponent<Camera>("Camera");
+      if (cameraComponent) {
+        camera = cameraComponent;
+        break;
+      }
+    }
+
+    this.renderer?.begin(camera);
     this.scene.onRender();
     this.renderer?.end();
   }
@@ -63,7 +73,7 @@ export default class Engine {
     this.lastFrameTime = timestamp;
 
     this.update(deltaTime);
-    this.render(deltaTime);
+    this.render();
 
     requestAnimationFrame(this.tick);
   }

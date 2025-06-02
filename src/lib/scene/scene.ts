@@ -7,19 +7,21 @@ export default class Scene {
   constructor(readonly name: string) {
   }
 
-  public createEntity(): Entity {
+  createEntity(): Entity {
     return this.entities[this.entities.push(new Entity()) - 1]!;
   }
 
-  public getEntity(id: string) {
+  getEntity(id: string) {
     return this.entities.find((e) => e.id === id);
   }
 
-  public destroyEntity(id: string) {
+  getEntities = () => this.entities;
+
+  destroyEntity(id: string) {
     this.entities.filter((e) => e.id !== id);
   }
 
-  public onUpdate(dt: number) {
+  onUpdate(dt: number) {
     if (!this.running) return;
 
     for (const ent of this.entities) {
@@ -29,7 +31,7 @@ export default class Scene {
     }
   }
 
-  public onRender() {
+  onRender() {
     for (const ent of this.entities) {
       for (const [key, component] of Object.entries(ent.getComponents())) {
         if (component.onRender) component.onRender();
@@ -37,11 +39,11 @@ export default class Scene {
     }
   }
 
-  public pause() {
+  pause() {
     this.running = false;
   }
 
-  public play() {
+  play() {
     this.running = true;
   }
 }

@@ -171,6 +171,9 @@
   .w-screen {
     width: 100vw;
   }
+  .resize {
+    resize: both;
+  }
   .bg-slate-700 {
     background-color: var(--color-slate-700);
   }

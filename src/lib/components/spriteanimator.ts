@@ -10,7 +10,9 @@ export default class SpriteAnimator implements Component {
   framesPerSecond: number = 24;
   spriteRenderer: SpriteRenderer | undefined;
 
-  private countdown = 1 / this.framesPerSecond;
+  private countdown = 0;
+  private variables: Record<string, boolean> = {};
+  private rules: { deps: Record<string, boolean>, spriteSheet: SpriteSheet }[] = [];
 
   onUpdate(dt: number): void {
     this.countdown -= dt;
@@ -19,6 +21,39 @@ export default class SpriteAnimator implements Component {
 
       if (this.spriteRenderer)
         this.spriteRenderer.sprite = this.spriteSheet?.getNextSprite();
+    }
+
+    this.checkRules();
+  }
+
+  setRule(deps: Record<string, boolean>, spriteSheet: SpriteSheet) {
+    this.rules.push({ deps, spriteSheet });
+  }
+
+  setVar(name: string, defaultValue: boolean) {
+    this.variables[name] = defaultValue;
+  }
+
+  getVar(name: string) {
+    return this.variables[name] || false;
+  }
+
+  private checkRules() {
+    for (const rule of this.rules) {
+      let triggered = true;
+      for (const [name, value] of Object.entries(rule.deps)) {
+        if (this.variables[name] !== undefined && (this.variables[name] !== value)) {
+          triggered = false;
+          break;
+        }
+      }
+
+      if (triggered && this.spriteSheet !== rule.spriteSheet) {
+        rule.spriteSheet.reset();
+        this.spriteSheet = rule.spriteSheet;
+        this.countdown = 0;
+        break;
+      }
     }
   }
 }

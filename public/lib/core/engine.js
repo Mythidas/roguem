@@ -40,8 +40,16 @@ export default class Engine {
     update(dt) {
         this.scene.onUpdate(dt);
     }
-    render(dt) {
-        this.renderer?.begin();
+    render() {
+        let camera = undefined;
+        for (const ent of this.scene.getEntities()) {
+            const cameraComponent = ent.getComponent("Camera");
+            if (cameraComponent) {
+                camera = cameraComponent;
+                break;
+            }
+        }
+        this.renderer?.begin(camera);
         this.scene.onRender();
         this.renderer?.end();
     }
@@ -51,7 +59,7 @@ export default class Engine {
         const deltaTime = (timestamp - this.lastFrameTime) / 1000; // in seconds
         this.lastFrameTime = timestamp;
         this.update(deltaTime);
-        this.render(deltaTime);
+        this.render();
         requestAnimationFrame(this.tick);
     };
 }
