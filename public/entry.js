@@ -25,6 +25,7 @@ function main() {
     const ent1 = scene.createEntity();
     const controller = ent1.addComponent(PlayerController);
     const sprite = ent1.addComponent(SpriteRenderer);
+    controller.spriteRenderer = sprite;
     sprite.zIndex = 1;
     const animator = ent1.addComponent(SpriteAnimator);
     controller.spriteAnimator = animator;

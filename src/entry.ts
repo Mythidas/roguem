@@ -34,6 +34,7 @@ function main() {
   const ent1 = scene.createEntity();
   const controller = ent1.addComponent<PlayerController>(PlayerController);
   const sprite = ent1.addComponent<SpriteRenderer>(SpriteRenderer);
+  controller.spriteRenderer = sprite;
   sprite.zIndex = 1;
   const animator = ent1.addComponent<SpriteAnimator>(SpriteAnimator);
   controller.spriteAnimator = animator;
@@ -50,6 +51,7 @@ function main() {
     animator.setRule({ "walking": false }, idleAnimation);
     animator.setRule({ "walking": true }, runAnimation);
   });
+
   const ent3 = scene.createEntity();
   const camera = ent3.addComponent<Camera>(Camera);
   ent3.position[2] = -5;

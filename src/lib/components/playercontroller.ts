@@ -4,19 +4,15 @@ import type { Vector2 } from "../math/vector.js";
 import type Component from "../scene/component.js";
 import type Entity from "../scene/entity.js";
 import type SpriteAnimator from "./spriteanimator.js";
-
-export enum PlayerState {
-  IDLE,
-  WALKING
-}
+import type SpriteRenderer from "./spriterenderer.js";
 
 export default class PlayerController implements Component {
   readonly name: string = "PlayerController";
   entityId: string = "";
 
   speed = 3.0;
-  state: PlayerState = PlayerState.IDLE;
   spriteAnimator: SpriteAnimator | undefined;
+  spriteRenderer: SpriteRenderer | undefined;
 
   private velocity: Vector2 = [0, 0];
 
@@ -25,14 +21,24 @@ export default class PlayerController implements Component {
     if (entity) {
       this.move(entity, dt);
       if (this.spriteAnimator) {
-        if (this.state === PlayerState.IDLE) {
-          this.spriteAnimator.setVar("walking", false);
-        } else this.spriteAnimator.setVar("walking", true);
+        if (this.velocity[0] !== 0 || this.velocity[1] !== 0) {
+          this.spriteAnimator.setVar('walking', true);
+        } else this.spriteAnimator.setVar('walking', false);
+      }
+
+      if (this.spriteRenderer) {
+        if (this.velocity[0] < 0) {
+          this.spriteRenderer.flipX = true;
+        } else if (this.velocity[0] > 0) {
+          this.spriteRenderer.flipX = false;
+        }
       }
     }
   }
 
   private move(entity: Entity, dt: number) {
+    this.velocity = [0, 0];
+
     if (Input.isKeyDown(Keys.W)) {
       this.velocity[1] += this.speed;
     }
@@ -48,10 +54,5 @@ export default class PlayerController implements Component {
 
     entity.position[0] += this.velocity[0] * dt;
     entity.position[1] += this.velocity[1] * dt;
-    if (this.velocity[0] !== 0 || this.velocity[1] !== 0) {
-      this.state = PlayerState.WALKING;
-    } else this.state = PlayerState.IDLE;
-
-    this.velocity = [0, 0];
   }
 }
