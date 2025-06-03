@@ -21,7 +21,7 @@ function main() {
     element: string;
 
     constructor() {
-      this.element = Overlay.createElement(OverlayLocation.TOP_RIGHT);
+      this.element = Overlay.createElement(OverlayLocation.BOTTOM_RIGHT);
     }
 
     onUpdate(dt: number): void {

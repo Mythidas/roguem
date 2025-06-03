@@ -69,7 +69,6 @@ export default class Overlay {
   }
 
   private static checkElements() {
-    console.log(this.tlElement?.className);
     if (Overlay.tlElement) {
       if (Overlay.children[OverlayLocation.TOP_LEFT].length > 0)
         Overlay.tlElement.className = `absolute top-3 left-3 ${BASE_ELEMENT_PARENT}`;

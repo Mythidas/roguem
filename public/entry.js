@@ -14,7 +14,7 @@ function main() {
         entityId = "";
         element;
         constructor() {
-            this.element = Overlay.createElement(OverlayLocation.TOP_RIGHT);
+            this.element = Overlay.createElement(OverlayLocation.BOTTOM_RIGHT);
         }
         onUpdate(dt) {
             Overlay.writeText(this.element, `FPS: ${Math.floor(1 / dt)}`);
