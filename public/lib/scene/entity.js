@@ -1,28 +1,17 @@
+import Engine from "../core/engine.js";
 export default class Entity {
     id;
-    position = [0, 0, 0];
-    rotation = [0, 0, 0];
-    scale = [1, 1];
-    components = {};
-    constructor() {
-        this.id = crypto.randomUUID();
+    scene;
+    constructor(id) {
+        this.id = id;
+        this.scene = Engine.get().getScene();
     }
-    hasComponent(name) {
-        return !!this.components[name];
-    }
-    getComponent(name) {
-        return this.components[name];
-    }
-    addComponent(componentClass, ...args) {
-        const component = new componentClass(...args);
-        component.entityId = this.id;
-        this.components[component.name] = component;
-        return component;
-    }
-    removeComponent(name) {
-        if (this.components[name]) {
-            delete this.components[name];
-        }
-    }
-    getComponents = () => this.components;
+    static createEntity = () => new Entity(Engine.get()?.getScene().createEntity());
+    static getEntity = (id) => new Entity(id);
+    static destroyEntity = (id) => Engine.get()?.getScene().destroyEntity(id);
+    addComponent = (t, d) => this.scene.addComponent(this.id, t, d);
+    getComponent = (t) => this.scene.getComponent(this.id, t);
+    removeComponent = (t) => this.scene.removeComponent(this.id, t);
+    hasComponent = (type) => this.scene.hasComponent(this.id, type);
+    destroy = () => this.scene.destroyEntity(this.id);
 }

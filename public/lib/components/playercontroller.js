@@ -1,16 +1,19 @@
 import Engine from "../core/engine.js";
 import Input, { Keys } from "../core/input.js";
-export default class PlayerController {
+import Component from "../scene/component.js";
+import Entity from "../scene/entity.js";
+import Transform from "./transform.js";
+export default class PlayerController extends Component {
     name = "PlayerController";
     entityId = "";
     speed = 3.0;
     spriteAnimator;
     spriteRenderer;
     velocity = [0, 0];
-    onUpdate(dt) {
-        const entity = Engine.get()?.getScene().getEntity(this.entityId);
-        if (entity) {
-            this.move(entity, dt);
+    onUpdate(dt, entityId) {
+        const transform = Entity.getEntity(entityId).getComponent(Transform.name);
+        if (transform) {
+            this.move(transform, dt);
             if (this.spriteAnimator) {
                 if (this.velocity[0] !== 0 || this.velocity[1] !== 0) {
                     this.spriteAnimator.setVar('walking', true);
@@ -28,7 +31,7 @@ export default class PlayerController {
             }
         }
     }
-    move(entity, dt) {
+    move(transform, dt) {
         this.velocity = [0, 0];
         if (Input.isKeyDown(Keys.W)) {
             this.velocity[1] += this.speed;
@@ -42,7 +45,7 @@ export default class PlayerController {
         if (Input.isKeyDown(Keys.D)) {
             this.velocity[0] += this.speed;
         }
-        entity.position[0] += this.velocity[0] * dt;
-        entity.position[1] += this.velocity[1] * dt;
+        transform.position[0] += this.velocity[0] * dt;
+        transform.position[1] += this.velocity[1] * dt;
     }
 }

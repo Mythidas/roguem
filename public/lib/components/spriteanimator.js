@@ -1,4 +1,5 @@
-export default class SpriteAnimator {
+import Component from "../scene/component.js";
+export default class SpriteAnimator extends Component {
     name = "SpriteAnimator";
     entityId = "";
     spriteSheet;
@@ -7,7 +8,7 @@ export default class SpriteAnimator {
     countdown = 0;
     variables = {};
     rules = [];
-    onUpdate(dt) {
+    onUpdate(dt, entityId) {
         this.countdown -= dt;
         if (this.countdown <= 0 && this.spriteSheet) {
             this.countdown = 1 / this.framesPerSecond;

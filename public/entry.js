@@ -2,10 +2,13 @@ import Camera from "./lib/components/camera.js";
 import PlayerController from "./lib/components/playercontroller.js";
 import SpriteAnimator from "./lib/components/spriteanimator.js";
 import SpriteRenderer from "./lib/components/spriterenderer.js";
+import Transform from "./lib/components/transform.js";
 import Engine from "./lib/core/engine.js";
 import Overlay, { OverlayLocation } from "./lib/renderer/overlay.js";
 import SpriteSheet from "./lib/renderer/spritesheet.js";
 import Texture from "./lib/renderer/texture.js";
+import Entity from "./lib/scene/entity.js";
+import SpriteSystem from "./lib/systems/SpriteSystem.js";
 main();
 function main() {
     const engine = new Engine();
@@ -21,13 +24,15 @@ function main() {
         }
     }
     engine.start();
+    engine.addSystem(new SpriteSystem);
     const scene = engine.getScene();
-    const ent1 = scene.createEntity();
-    const controller = ent1.addComponent(PlayerController);
-    const sprite = ent1.addComponent(SpriteRenderer);
+    const ent1 = Entity.createEntity();
+    ent1.addComponent(Transform.name, new Transform);
+    const controller = ent1.addComponent(PlayerController.name, new PlayerController());
+    const sprite = ent1.addComponent(SpriteRenderer.name, new SpriteRenderer());
     controller.spriteRenderer = sprite;
     sprite.zIndex = 1;
-    const animator = ent1.addComponent(SpriteAnimator);
+    const animator = ent1.addComponent(SpriteAnimator.name, new SpriteAnimator());
     controller.spriteAnimator = animator;
     animator.spriteRenderer = sprite;
     animator.framesPerSecond = 8;
@@ -41,13 +46,14 @@ function main() {
         animator.setRule({ "walking": false }, idleAnimation);
         animator.setRule({ "walking": true }, runAnimation);
     });
-    const ent3 = scene.createEntity();
-    const camera = ent3.addComponent(Camera);
-    ent3.position[2] = -5;
+    const ent3 = Entity.createEntity();
+    const camera = ent3.addComponent(Camera.name, new Camera());
+    const transform3 = ent3.addComponent(Transform.name, new Transform());
+    transform3.position[2] = -5;
     camera.clearColor = [0.6, 0.4, 0.3, 1.0];
     camera.size = 5;
-    const ent2 = scene.createEntity();
-    ent2.addComponent(SpriteRenderer);
-    ent2.position[0] = 2;
-    ent2.addComponent(FPSComponent);
+    const ent2 = Entity.createEntity();
+    ent2.addComponent(SpriteRenderer.name, new SpriteRenderer());
+    ent2.addComponent(FPSComponent.name, new SpriteRenderer());
+    ent2.addComponent(Transform.name, new Transform);
 }

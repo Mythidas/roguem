@@ -1,3 +1,4 @@
+import Camera from "../components/camera.js";
 import Overlay from "../renderer/overlay.js";
 import GLRenderer from "../renderer/renderer.js";
 import Scene from "../scene/scene.js";
@@ -6,6 +7,7 @@ export default class Engine {
     running = false;
     renderer;
     scene = new Scene("default");
+    systems = [];
     lastFrameTime = 0;
     constructor() {
         if (!Engine.singleton) {
@@ -38,20 +40,28 @@ export default class Engine {
         this.running = false;
         this.renderer?.destroy();
     }
+    addSystem(system) {
+        this.systems.push(system);
+    }
     update(dt) {
         this.scene.onUpdate(dt);
+        for (const system of this.systems) {
+            if (system.onUpdate)
+                system.onUpdate(dt);
+        }
     }
     render() {
-        let camera = undefined;
-        for (const ent of this.scene.getEntities()) {
-            const cameraComponent = ent.getComponent("Camera");
-            if (cameraComponent) {
-                camera = cameraComponent;
-                break;
-            }
+        let mainCamera = undefined;
+        const cameraView = this.scene.getView(Camera.name);
+        for (const [id, camera] of cameraView.entities()) {
+            mainCamera = camera;
         }
-        this.renderer?.begin(camera);
+        this.renderer?.begin(mainCamera);
         this.scene.onRender();
+        for (const system of this.systems) {
+            if (system.onRender)
+                system.onRender();
+        }
         this.renderer?.end();
     }
     tick = (timestamp) => {

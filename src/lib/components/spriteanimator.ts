@@ -1,8 +1,8 @@
 import type SpriteSheet from "../renderer/spritesheet.js";
-import type Component from "../scene/component.js";
+import Component from "../scene/component.js";
 import type SpriteRenderer from "./spriterenderer.js";
 
-export default class SpriteAnimator implements Component {
+export default class SpriteAnimator extends Component {
   readonly name: string = "SpriteAnimator";
 
   entityId: string = "";
@@ -14,7 +14,7 @@ export default class SpriteAnimator implements Component {
   private variables: Record<string, boolean> = {};
   private rules: { deps: Record<string, boolean>, spriteSheet: SpriteSheet }[] = [];
 
-  onUpdate(dt: number): void {
+  onUpdate(dt: number, entityId: [number, number]): void {
     this.countdown -= dt;
     if (this.countdown <= 0 && this.spriteSheet) {
       this.countdown = 1 / this.framesPerSecond;

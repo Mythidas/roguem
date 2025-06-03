@@ -1,7 +1,4 @@
-export default interface Component {
-  readonly name: string;
-  entityId: string;
-
-  onUpdate?(dt: number): void;
-  onRender?(): void;
+export default class Component {
+  onUpdate?(dt: number, entityId: [number, number]): void;
+  onRender?(enitytId: [number, number]): void;
 }

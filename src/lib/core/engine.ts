@@ -1,7 +1,8 @@
-import type Camera from "../components/camera.js";
+import Camera from "../components/camera.js";
 import Overlay from "../renderer/overlay.js";
 import GLRenderer from "../renderer/renderer.js";
 import Scene from "../scene/scene.js";
+import type System from "./system.js";
 
 export default class Engine {
   static singleton: Engine | undefined;
@@ -9,6 +10,7 @@ export default class Engine {
   private running = false;
   private renderer: GLRenderer | undefined;
   private scene: Scene = new Scene("default");
+  private systems: System[] = [];
   private lastFrameTime: number = 0;
 
   constructor() {
@@ -30,11 +32,11 @@ export default class Engine {
   }
 
   static get = () => Engine.singleton;
-  public isRunning = () => this.running;
-  public getScene = () => this.scene;
-  public getRenderer = () => this.renderer;
+  isRunning = () => this.running;
+  getScene = () => this.scene;
+  getRenderer = () => this.renderer;
 
-  public start() {
+  start() {
     if (this.running === true) return;
 
     this.running = true;
@@ -43,31 +45,39 @@ export default class Engine {
     requestAnimationFrame(this.tick);
   }
 
-  public stop() {
+  stop() {
     this.running = false;
     this.renderer?.destroy();
   }
 
-  update(dt: number) {
-    this.scene.onUpdate(dt);
+  addSystem(system: System) {
+    this.systems.push(system);
   }
 
-  render() {
-    let camera = undefined;
-    for (const ent of this.scene.getEntities()) {
-      const cameraComponent = ent.getComponent<Camera>("Camera");
-      if (cameraComponent) {
-        camera = cameraComponent;
-        break;
-      }
+  private update(dt: number) {
+    this.scene.onUpdate(dt);
+
+    for (const system of this.systems) {
+      if (system.onUpdate) system.onUpdate(dt);
+    }
+  }
+
+  private render() {
+    let mainCamera = undefined;
+    const cameraView = this.scene.getView(Camera.name);
+    for (const [id, camera] of cameraView.entities()) {
+      mainCamera = camera as Camera;
     }
 
-    this.renderer?.begin(camera);
+    this.renderer?.begin(mainCamera);
     this.scene.onRender();
+    for (const system of this.systems) {
+      if (system.onRender) system.onRender();
+    }
     this.renderer?.end();
   }
 
-  tick = (timestamp: number) => {
+  private tick = (timestamp: number) => {
     if (!this.running) return;
 
     const deltaTime = (timestamp - this.lastFrameTime) / 1000; // in seconds

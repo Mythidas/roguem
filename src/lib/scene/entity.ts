@@ -1,37 +1,22 @@
-import type { Vector2, Vector3 } from "../math/vector.js";
+import Engine from "../core/engine.js";
 import type Component from "./component.js";
+import type Scene from "./scene.js";
+import type { EntityID } from "./scene.js";
 
 export default class Entity {
-  readonly id: string;
-  position: Vector3 = [0, 0, 0];
-  rotation: Vector3 = [0, 0, 0];
-  scale: Vector2 = [1, 1];
+  private scene: Scene;
 
-  private components: Record<string, Component> = {};
-
-  constructor() {
-    this.id = crypto.randomUUID();
+  constructor(readonly id: EntityID) {
+    this.scene = Engine.get()!.getScene();
   }
 
-  public hasComponent(name: string) {
-    return !!this.components[name];
-  }
+  static createEntity = () => new Entity(Engine.get()?.getScene().createEntity()!);
+  static getEntity = (id: EntityID) => new Entity(id);
+  static destroyEntity = (id: EntityID) => Engine.get()?.getScene().destroyEntity(id);
 
-  public getComponent<T extends Component>(name: string): T | undefined {
-    return this.components[name] as T | undefined;
-  }
-
-  public addComponent<T extends Component>(componentClass: new (...args: any[]) => T, ...args: any[]): T {
-    const component = new componentClass(...args);
-    component.entityId = this.id;
-    this.components[component.name] = component;
-    return component;
-  }
-  public removeComponent(name: string) {
-    if (this.components[name]) {
-      delete this.components[name];
-    }
-  }
-
-  public getComponents = () => this.components;
+  addComponent = <T extends Component>(t: string, d: object) => this.scene.addComponent<T>(this.id, t, d)!;
+  getComponent = <T extends Component>(t: string) => this.scene.getComponent<T>(this.id, t);
+  removeComponent = (t: string) => this.scene.removeComponent(this.id, t);
+  hasComponent = (type: string) => this.scene.hasComponent(this.id, type);
+  destroy = () => this.scene.destroyEntity(this.id);
 }

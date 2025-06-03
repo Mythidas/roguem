@@ -1,6 +1,9 @@
 import Engine from "../core/engine.js";
 import * as mat4 from "../math/matrix4.js";
-export default class Camera {
+import Component from "../scene/component.js";
+import Entity from "../scene/entity.js";
+import Transform from "./transform.js";
+export default class Camera extends Component {
     name = "Camera";
     entityId = "";
     nearClip = 0.1;
@@ -13,17 +16,18 @@ export default class Camera {
     width = 1280;
     height = 720;
     constructor() {
+        super();
         this.projectionMatrix = mat4.create();
         this.modelViewMatrix = mat4.create();
     }
     getProjection = () => this.projectionMatrix;
     getModelView = () => this.modelViewMatrix;
-    onUpdate(dt) {
-        const entity = Engine.get()?.getScene().getEntity(this.entityId);
-        if (!entity)
+    onUpdate(dt, entityId) {
+        const transform = Entity.getEntity(entityId).getComponent(Transform.name);
+        if (!transform)
             return;
         this.modelViewMatrix = mat4.create();
-        const position = [-entity.position[0], -entity.position[1], entity.position[2]];
+        const position = [-transform.position[0], -transform.position[1], transform.position[2]];
         mat4.translate(this.modelViewMatrix, position);
     }
     resize(width, height) {

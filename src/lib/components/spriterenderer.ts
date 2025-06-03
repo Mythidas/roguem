@@ -1,9 +1,11 @@
 import Engine from "../core/engine.js";
 import type { Vector4 } from "../math/vector.js";
-import type Sprite from "../renderer/sprite.js";
-import type Component from "../scene/component.js";
+import Sprite from "../renderer/sprite.js";
+import Component from "../scene/component.js";
+import Entity from "../scene/entity.js";
+import Transform from "./transform.js";
 
-export default class SpriteRenderer implements Component {
+export default class SpriteRenderer extends Component {
   readonly name: string = "SpriteRenderer";
 
   entityId: string = "";
@@ -12,19 +14,4 @@ export default class SpriteRenderer implements Component {
   zIndex: number = 0;
   flipX: boolean = false;
   flipY: boolean = false;
-
-  onRender(): void {
-    const ent = Engine.get()?.getScene().getEntity(this.entityId);
-    if (ent) {
-      Engine.get()?.getRenderer()?.drawQuad(
-        ent.position,
-        [ent.scale[0] * (this.flipX ? -1 : 1), ent.scale[1] * (this.flipY ? -1 : 1)],
-        [1, 1, 1, 1],
-        this.zIndex,
-        this.sprite?.coordinates,
-        undefined,
-        this.sprite?.texture
-      );
-    }
-  }
 }
