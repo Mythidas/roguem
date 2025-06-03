@@ -1,4 +1,5 @@
 import type Camera from "../components/camera.js";
+import Overlay from "../renderer/overlay.js";
 import GLRenderer from "../renderer/renderer.js";
 import Scene from "../scene/scene.js";
 

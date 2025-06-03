@@ -3,11 +3,23 @@ import PlayerController from "./lib/components/playercontroller.js";
 import SpriteAnimator from "./lib/components/spriteanimator.js";
 import SpriteRenderer from "./lib/components/spriterenderer.js";
 import Engine from "./lib/core/engine.js";
+import Overlay, { OverlayLocation } from "./lib/renderer/overlay.js";
 import SpriteSheet from "./lib/renderer/spritesheet.js";
 import Texture from "./lib/renderer/texture.js";
 main();
 function main() {
     const engine = new Engine();
+    class FPSComponent {
+        name = "FPSComponent";
+        entityId = "";
+        element;
+        constructor() {
+            this.element = Overlay.createElement(OverlayLocation.TOP_RIGHT);
+        }
+        onUpdate(dt) {
+            Overlay.writeText(this.element, `FPS: ${Math.floor(1 / dt)}`);
+        }
+    }
     engine.start();
     const scene = engine.getScene();
     const ent1 = scene.createEntity();
@@ -36,4 +48,5 @@ function main() {
     const ent2 = scene.createEntity();
     ent2.addComponent(SpriteRenderer);
     ent2.position[0] = 2;
+    ent2.addComponent(FPSComponent);
 }

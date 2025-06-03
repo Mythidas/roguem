@@ -1,3 +1,4 @@
+import Overlay from "../renderer/overlay.js";
 import GLRenderer from "../renderer/renderer.js";
 import Scene from "../scene/scene.js";
 export default class Engine {

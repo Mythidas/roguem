@@ -10,6 +10,20 @@
 
 <body class="w-screen h-screen bg-slate-700 text-white">
   <canvas id="gl-canvas" class="size-full" width="1920" height="1080"></canvas>
+  <div id="overlay" class="size-full fixed top-0">
+    <div id="top-left">
+    </div>
+    <div id="top-right" class="absolute top-3 right-3 flex flex-col gap-2 w-fit bg-slate-500/40 shadow rounded-md p-4">
+    </div>
+    <div id="bottom-left"
+      class="absolute bottom-3 left-3 flex flex-col gap-2 w-fit bg-slate-500/40 shadow rounded-md p-4">
+    </div>
+    <div id="bottom-right"
+      class="absolute bottom-3 right-3 flex flex-col gap-2 w-fit bg-slate-500/40 shadow rounded-md p-4">
+    </div>
+    <div id="center" class="absolute top-1/2 left-1/2 flex flex-col gap-2 w-fit bg-slate-500/40 shadow rounded-md p-4">
+    </div>
+  </div>
 </body>
 
 </html>
